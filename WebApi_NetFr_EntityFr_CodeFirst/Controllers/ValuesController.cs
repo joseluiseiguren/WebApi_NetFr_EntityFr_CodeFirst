@@ -71,7 +71,7 @@ namespace WebApi_NetFr_EntityFr_CodeFirst.Controllers
                     Grade = ctx.Grades.OrderByDescending(p => p.GradeId).FirstOrDefault(),
                     Height = 10,
                     Photo = null,
-                    StudentName = GenerateName(new Random().Next(5, 10))
+                    StudentName = GenerateName(new Random().Next(5, 10)),
                     Weight = 50
                 };
 
