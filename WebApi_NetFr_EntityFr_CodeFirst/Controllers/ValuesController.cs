@@ -13,32 +13,18 @@ namespace WebApi_NetFr_EntityFr_CodeFirst.Controllers
         // GET api/values
         public IEnumerable<string> Get()
         {
+            var ret = new List<string>();
+
+            DeleteStudent();
             AddGrade();
+            AddStudent();
+            var students = GetStudents();
+            foreach(var student in students)
+            {
+                ret.Add(student.StudentID.ToString() + " - " + student.StudentName);
+            }
 
-
-
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/values/5
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/values
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT api/values/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        public void Delete(int id)
-        {
+            return ret;
         }
 
         private void AddGrade()
@@ -70,6 +56,75 @@ namespace WebApi_NetFr_EntityFr_CodeFirst.Controllers
                 };
 
                 ctx.Grades.Add(grade);
+                ctx.SaveChanges();
+
+            }
+        }
+
+        private void AddStudent()
+        {
+            using (var ctx = new SchoolContext())
+            {
+                Student st = new Student()
+                {
+                    DateOfBirth = DateTime.UtcNow,
+                    Grade = ctx.Grades.OrderByDescending(p => p.GradeId).FirstOrDefault(),
+                    Height = 10,
+                    Photo = null,
+                    StudentName = GenerateName(new Random().Next(5, 10))
+                    Weight = 50
+                };
+
+                ctx.Students.Add(st);
+                ctx.SaveChanges();
+
+            }
+        }
+
+        private IEnumerable<Student> GetStudents()
+        {
+            using (var ctx = new SchoolContext())
+            {
+                return ctx.Students.OrderBy(p => p.StudentID).ToList();                
+
+            }
+        }
+
+        private string GenerateName(int len)
+        {
+            Random r = new Random();
+            string[] consonants = { "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "l", "n", "p", "q", "r", "s", "sh", "zh", "t", "v", "w", "x" };
+            string[] vowels = { "a", "e", "i", "o", "u", "ae", "y" };
+            string Name = "";
+            Name += consonants[r.Next(consonants.Length)].ToUpper();
+            Name += vowels[r.Next(vowels.Length)];
+            int b = 2; //b tells how many times a new letter has been added. It's 2 right now because the first two letters are already in the name.
+            while (b < len)
+            {
+                Name += consonants[r.Next(consonants.Length)];
+                b++;
+                Name += vowels[r.Next(vowels.Length)];
+                b++;
+            }
+
+            return Name;
+        }
+
+        private void DeleteStudent()
+        {
+            using (var ctx = new SchoolContext())
+            {
+                if (ctx.Students.ToList().Count < 20)
+                {
+                    return;
+                }
+
+                var students = ctx.Students.ToList();
+                for (int i = 20; i > 0; i--)
+                {
+                    ctx.Students.Remove(students[i-1]);
+                }
+                
                 ctx.SaveChanges();
 
             }

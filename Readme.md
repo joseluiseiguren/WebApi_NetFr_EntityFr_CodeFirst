@@ -22,3 +22,8 @@ MIGRATIONS
 		* Add this line on context constructor
 			Database.SetInitializer(new MigrateDatabaseToLatestVersion<SchoolContext, Migrations.Configuration>());
 ```
+
+### Modify an entity from the model, and the database should be updated in the next run
+
+
+# Todo's -> Transactions / Decorators for constraints / 
